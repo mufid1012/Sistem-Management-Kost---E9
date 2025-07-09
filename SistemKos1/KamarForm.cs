@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
@@ -11,7 +11,6 @@ namespace SistemKos1
     {
         Koneksi kn = new Koneksi();
         string strKonek = "";
-        //private string connectionString = "Server=HANIFATUL-NADIV\\HANIFA;Database=SistemManagementKost;Trusted_Connection=True;";
         MemoryCache cache = MemoryCache.Default;
         string cacheKey = "KamarData";
         CacheItemPolicy policy = new CacheItemPolicy { AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(5) };
@@ -102,10 +101,16 @@ namespace SistemKos1
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(txtIdKamar.Text) || string.IsNullOrWhiteSpace(txtHarga.Text))
+                {
+                    MessageBox.Show("ID Kamar dan Harga wajib diisi.", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
                 string idKamar = txtIdKamar.Text.Trim();
                 string hargaText = txtHarga.Text.Trim();
 
-                if (string.IsNullOrEmpty(idKamar) || idKamar.Length != 5)
+                if (idKamar.Length != 5)
                 {
                     MessageBox.Show("ID Kamar harus 5 karakter.");
                     return;
@@ -145,8 +150,7 @@ namespace SistemKos1
                     catch (SqlException sqlEx)
                     {
                         transaction.Rollback();
-
-                        if (sqlEx.Number == 2627 || sqlEx.Number == 2601) // Duplikat PK/UNIQUE
+                        if (sqlEx.Number == 2627 || sqlEx.Number == 2601)
                         {
                             MessageBox.Show("ID Kamar sudah terdaftar. Silakan gunakan ID lain.", "Error Duplikat", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
@@ -163,15 +167,26 @@ namespace SistemKos1
             }
         }
 
-
         private void btnUpdate_Click(object sender, EventArgs e)
         {
             try
             {
+                if (dataGridViewKamar.SelectedRows.Count == 0)
+                {
+                    MessageBox.Show("Silakan pilih data kamar yang ingin diperbarui dari tabel.", "Peringatan", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(txtIdKamar.Text) || string.IsNullOrWhiteSpace(txtHarga.Text))
+                {
+                    MessageBox.Show("ID Kamar dan Harga wajib diisi.", "Validasi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
                 string idKamar = txtIdKamar.Text.Trim();
                 string hargaText = txtHarga.Text.Trim();
 
-                if (string.IsNullOrEmpty(idKamar) || idKamar.Length != 5)
+                if (idKamar.Length != 5)
                 {
                     MessageBox.Show("ID Kamar harus 5 karakter.");
                     return;
@@ -268,16 +283,8 @@ namespace SistemKos1
         {
             InvalidateCache();
             LoadData();
-
-            // Debugging: Cek jumlah kolom dan baris
-            MessageBox.Show(
-                $"Jumlah Kolom: {dataGridViewKamar.ColumnCount}\nJumlah Baris: {dataGridViewKamar.RowCount}",
-                "Debugging DataGridView",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information
-            );
+            MessageBox.Show($"Jumlah Kolom: {dataGridViewKamar.ColumnCount}\nJumlah Baris: {dataGridViewKamar.RowCount}", "Debugging DataGridView", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
-
 
         private void ClearForm()
         {
@@ -308,10 +315,6 @@ namespace SistemKos1
                 if (status == "disewa") e.CellStyle.BackColor = Color.Green;
                 else if (status == "tersedia") e.CellStyle.BackColor = Color.Red;
             }
-        }
-
-        private void cmbPenyewa_SelectedIndexChanged(object sender, EventArgs e)
-        {
         }
 
         private void btnAnalyze_Click(object sender, EventArgs e)
