@@ -71,7 +71,6 @@
             this.cmbPenyewa.Name = "cmbPenyewa";
             this.cmbPenyewa.Size = new System.Drawing.Size(346, 28);
             this.cmbPenyewa.TabIndex = 7;
-            this.cmbPenyewa.SelectedIndexChanged += new System.EventHandler(this.cmbPenyewa_SelectedIndexChanged);
             // 
             // dataGridViewKamar
             // 
